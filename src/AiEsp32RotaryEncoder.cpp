@@ -169,19 +169,19 @@ void IRAM_ATTR AiEsp32RotaryEncoder::readButton_ISR()
 	else if (butt_state && !this->previous_butt_state)
 	{
 		this->previous_butt_state = true;
-		Serial.println("Button Pushed");
+		// Serial.println("Button Pushed");
 		buttonState = BUT_PUSHED;
 	}
 	else if (!butt_state && this->previous_butt_state)
 	{
 		this->previous_butt_state = false;
-		Serial.println("Button Released");
+		// Serial.println("Button Released");
 		buttonState = BUT_RELEASED;
 	}
 	else
 	{
 		buttonState = (butt_state ? BUT_DOWN : BUT_UP);
-		Serial.println(butt_state ? "BUT_DOWN" : "BUT_UP");
+		// Serial.println(butt_state ? "BUT_DOWN" : "BUT_UP");
 	}
 
 #if defined(ESP8266)
@@ -190,7 +190,12 @@ void IRAM_ATTR AiEsp32RotaryEncoder::readButton_ISR()
 #endif
 }
 
-AiEsp32RotaryEncoder::AiEsp32RotaryEncoder(uint8_t encoder_APin, uint8_t encoder_BPin, int encoder_ButtonPin, int encoder_VccPin, uint8_t encoderSteps, bool areEncoderPinsPulldown_forEsp32)
+AiEsp32RotaryEncoder::AiEsp32RotaryEncoder(uint8_t encoder_APin,
+                                           uint8_t encoder_BPin,
+                                           int encoder_ButtonPin,
+                                           int encoder_VccPin,
+                                           uint8_t encoderSteps,
+                                           bool areEncoderPinsPulldown_forEsp32)
 {
 	this->old_AB = 0;
 
@@ -277,6 +282,8 @@ void AiEsp32RotaryEncoder::begin()
 		pinMode(this->encoderButtonPin, isButtonPulldown ? INPUT_PULLDOWN : INPUT_PULLUP);
 #endif
 	}
+        int8_t ENC_PORT = ((digitalRead(this->encoderBPin)) ? (1 << 1) : 0) | ((digitalRead(this->encoderAPin)) ? (1 << 0) : 0);
+        this->old_AB = (ENC_PORT & 0x03) | ((ENC_PORT & 0x03) << 2);
 }
 
 ButtonState AiEsp32RotaryEncoder::currentButtonState()
